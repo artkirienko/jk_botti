@@ -1,3 +1,8 @@
+How to build:
+dpkg --add-architecture i386 \
+&& apt -y update && \
+apt -y install build-essential g++-multilib
+
 jk_botti 1.44β
 -------------
 
@@ -13,8 +18,8 @@ jk_botti 1.44β
 This is 1.44β release of jk_botti, by Jussi Kivilinna <jussi.kivilinna@iki.fi>
 You are free to use code for any of your needs.
 
-jk_botti is computer gamer for multiplayer mode of Half-Life (HLDM) and has 
-strong support for various submods of HLDM, modifications that change game on 
+jk_botti is computer gamer for multiplayer mode of Half-Life (HLDM) and has
+strong support for various submods of HLDM, modifications that change game on
 serverside but doesn't require client modifications.
 
 jk_botti aims to:
@@ -33,20 +38,20 @@ On Severian's and Bubblemod, gluon is disabled. Bot might work
 with XDM but this hasn't been tested.
 
 One of my major goals with jk_botti was to lower CPU usage compared to
-HPB_bot. I used to run Severian's server on 400Mhz Celeron (later updated 
+HPB_bot. I used to run Severian's server on 400Mhz Celeron (later updated
 800Mhz Athlon) and even few HPB_bots would rise cpu usage too high.
 (Update: I have new server on P3-550Mhz, with default small/medium maps
 like datacore/stalkyard with three bots I have see 15% cpu usage).
 
 Trick(s) used to lower CPU usage:
- * bot_think_fps settings for limiting number of thinks per second 
+ * bot_think_fps settings for limiting number of thinks per second
    (default: 30fps)
 
 Aiming system on jk_botti does not use currently available and latest player
 locations for tracking and shooting enemy but instead use old data (level 1
-bot 60ms, level 5 bot 300ms old) to guess position of player. This makes 
+bot 60ms, level 5 bot 300ms old) to guess position of player. This makes
 bot-aiming worser when player changes movement vector rapidly (jump, duck,
-change strafe direction rapidly). 
+change strafe direction rapidly).
 
 jk_botti creates waypoints automatically when 'autowaypoint' setting is
 enabled in config. Autowaypointing collects data on map start (weapon/item
@@ -79,14 +84,14 @@ Credits:
  * Tweaked low level bot skills alot
     * They will be more active now (run around maps) now
     * Not too good at combat
- * Bot reaction times have been adjusted to more human scale (level 1 
+ * Bot reaction times have been adjusted to more human scale (level 1
    has 100ms and level 5 300ms). Times used to be less before.
  * Removal of bot_reaction_time setting.
    * You can still use bot_skill settings to adjust reaction times.
  * Internal changes
    * Compiled with newer version of gcc
-   * Made large portion of inline functions uninlined as on modern 
-     cpus/system small cache/code size is better than inlining 
+   * Made large portion of inline functions uninlined as on modern
+     cpus/system small cache/code size is better than inlining
      everything manually.
 
 1.41:
@@ -107,18 +112,18 @@ Credits:
    finds enemy that isn't visible.
  * Bugfixes to goal selection and weapon selection, results huge improvement
    how bot work on when not given good weapons on spawn (which is typical on
-   Severian's MOD). 
- * Bot now understands that it can get more ammo by picking up same weapon 
+   Severian's MOD).
+ * Bot now understands that it can get more ammo by picking up same weapon
    again.
  * Bot avoids combat if it doesn't have good weapon or doesn't have enough
    health.
- * Output warning message when model given for bot creation is replaced by 
+ * Output warning message when model given for bot creation is replaced by
    team-balance code.
- * Changed to only check existance of player model file on listenserver 
+ * Changed to only check existance of player model file on listenserver
    when creating bots.
- * Changed save order of waypoint .wpt and .matrix files so that matrix 
+ * Changed save order of waypoint .wpt and .matrix files so that matrix
    doesn't have to be calculated one extra time.
- * Fixed instability problems: Replaced most of dynamic memory management 
+ * Fixed instability problems: Replaced most of dynamic memory management
    with static memory.
  * Fixed buggy creation of crouch waypoint over drop (it's recommended to
    replace server datacore.wpt with stock wpt since this bug hit most hard
@@ -130,7 +135,7 @@ Credits:
  * Fixed bots to get affected by weapon recoil. Somewhere along hldm releases
    recoil code was moved completely to client.dll, so now jk_botti will
    emulate client.dll function. Difference to MP5 aiming is most notable.
- * Removed hack to make bot aim worser than it should when using MP5, this 
+ * Removed hack to make bot aim worser than it should when using MP5, this
    isn't needed anymore.
  * Added team autobalance for teamplay servers. Requirements: mp_teamplay is
    set to 1 and mp_teamlist is set with more than one team.
@@ -158,16 +163,16 @@ Credits:
  * Fixed autowaypointing for paths leading from water to dry.
  * Added missing ammunition type 'ammo_9mmbox'.
  * Fixed goal selection to use wall mounted health/battery rechargers.
- * Compiled with more aggressive optimization flags. This speeds up 
+ * Compiled with more aggressive optimization flags. This speeds up
    path-matrix creation.
  * Fixed output for 'kickall'-command.
- * Fixed bot not to jump when coming near edge and bot is planing to go down 
+ * Fixed bot not to jump when coming near edge and bot is planing to go down
    using ladders.
- * Workaround for loading map specific config for map 'logo'. 
-   Use '_jk_botti_logo.cfg' for this map. 'jk_botti_logo.cfg' is already used 
+ * Workaround for loading map specific config for map 'logo'.
+   Use '_jk_botti_logo.cfg' for this map. 'jk_botti_logo.cfg' is already used
    for bot spraypaints.
- * Fixed bot always ducking when next waypoint is crouch waypoint. This 
-   caused bot not be able to jump through small window with crouch waypoint 
+ * Fixed bot always ducking when next waypoint is crouch waypoint. This
+   caused bot not be able to jump through small window with crouch waypoint
    inside.
 
 1.10:
@@ -178,16 +183,16 @@ Credits:
  * Lowered default bot lookaround/pause frequency and times.
  * Fixed autowaypointing not to place waypoints midair.
  * Fixed autowaypointing not to create impossible upwards paths.
- * Fixed autowaypointing not to create crouch waypoints if there is room to 
+ * Fixed autowaypointing not to create crouch waypoints if there is room to
    stand up.
- * Old waypoint files are automatically processed to fix above 
+ * Old waypoint files are automatically processed to fix above
    autowaypointing errors.
- * Lots of tweaks to autowaypointing: better handling of ladders and stairs, 
+ * Lots of tweaks to autowaypointing: better handling of ladders and stairs,
    better linking of isolated areas.
  * 'autowaypoint' is now default on.
  * New command 'show_waypoints' for viewing/aiding waypoint creation.
 
-1.01: 
+1.01:
  * Fixed 'bot_conntimes 1' crashing on Windows servers.
 
 1.00:
@@ -207,7 +212,7 @@ Credits:
  * Added waypoint files for default valve maps.
 
 0.54:
- * Fixed the way bots react to sounds. Instead of making sound enemy, bot 
+ * Fixed the way bots react to sounds. Instead of making sound enemy, bot
    finds it's way to the interesting sound.
  * New way of computing msec for RunPlayerMove.
  * Bots don't attack respawn players too fast (delay is skill depend).
@@ -236,7 +241,7 @@ Credits:
  * Tweaked down MP5 and crossbow aiming.
  * New setting to tweak down aim skill for specific weapons (aim_speed).
  * Bot chat is logged to server logs now.
- * Fixed weapon selection bug (from HPB). Bot randomized weapons in 
+ * Fixed weapon selection bug (from HPB). Bot randomized weapons in
    for loop causing weapons last in list to be used a lot less than
    weapon first in the list.
  * Added separate frame timer for aiming.
@@ -246,7 +251,7 @@ Credits:
  * Bots now use crossbow (with zoom).
  * Bots now know how to fire MP5 grenades at right angle depending target's
    height and distance.
- * Waypoint matrix is now calculated over time on first minutes after map 
+ * Waypoint matrix is now calculated over time on first minutes after map
    change with max 10ms time slices.
  * Waypoint matrix is saved at mapchange or server shutdown.
  * Bot skill can now be edited through jk_botti.cfg or 'jk_botti' server
@@ -270,7 +275,7 @@ Credits:
 3. Installing
 --------------------
 jk_botti is Metamod plugin, so I except you have already installed Metamod
-successfully. If not read: 
+successfully. If not read:
    http://wiki.bots-united.com/index.php/How_to_install_metamod
    http://wiki.bots-united.com/index.php/How_to_install_a_metamod_bot_%28or_any_metamod_plugin%29
 
@@ -280,7 +285,7 @@ addons/jk_botti/waypoints/* - empty directory created for waypoint files.
 addons/jk_botti/* - config files, readme files
 
 1. If this is NOT first install, backup your old jk_botti config files.
-2. Extract release file to your 'valve' directory. 
+2. Extract release file to your 'valve' directory.
 3. Edit 'addons/metamod/plugins.ini' and add like 'win32 addons/jk_botti/dlls/jk_botti_mm.dll'
 4. If this is your first install edit 'addons/jk_botti/jk_botti.cfg', otherwise restore your backup config
 5. Start server and enjoy.
@@ -302,7 +307,7 @@ Usage:
 
  - bot_skill_setup <skill>
       Shows all setting values for skill.
- 
+
  - bot_skill_setup reset
       Reset all skill settings to default.
 
@@ -317,84 +322,84 @@ List of available settings:
       Set range of time bot stays paused. Exact time is randomized value
       between these two. If min is larger than max, then min is used always.
       Value: 0.0-10.0
- 
+
  - normal_strafe
       How much bot strafes when walking around. This value is percent.
       Value: 0-100
- 
+
  - battle_strafe
       How much bot strafes when attacking enemy. This value is percent.
       Value: 0-100
- 
+
  - react_delay_min
    react_delay_max
       Set range of bot reaction time. Exact time is randomized value between
       these two. If min is larger than max, then min is used always.
       Value: 0.0-1.0
- 
+
  - weaponchange_rate_min
    weaponchange_rate_max
-      Set range of time bot tries to keep currect weapon. Exact time is 
-      randomized value between these two. If min is larger than max, then min 
+      Set range of time bot tries to keep currect weapon. Exact time is
+      randomized value between these two. If min is larger than max, then min
       is used always.
       Value: 0.0-10.0
-      
+
  - keep_optimal_distance
       How often bot out of 1000 times the bot tries to keep at optimum distance
       of weapon when attacking.
       Value: 0-999
- 
+
  - shootcone_diameter
-      Bot guesses if it's ok to fire target by thinking of virtual cone which 
-      tip is on bot's weapon and base of diameter set here on target position. 
+      Bot guesses if it's ok to fire target by thinking of virtual cone which
+      tip is on bot's weapon and base of diameter set here on target position.
       When bot is aiming inside base area it will
       think that target can be shot.
       Value: 100~400
-      
+
  - shootcone_minangle
       If above condition doesn't apply, bot will check if angle between bot aim
       and line to target is less than angle set here.
       Value: 0-180 (0 = no angle, 180 = shoot at everything even if behind us)
-      
+
  - turn_skill
       BotAim turn_skill, how good bot is at aiming on enemy.
       Value: 0.5-4 (0.5 = bad, 4 = very fast)
 
  - updown_turn_ration
       How much slower bots aims up and down than side ways?
-      Value: 1-10 (1 = bot aims up/downwards as fast as sideways, 10 = bot aim 
+      Value: 1-10 (1 = bot aims up/downwards as fast as sideways, 10 = bot aim
                    almost level, default for level 1 bot = 2.0, level 5 = 3.0)
 
  - hearing_sensitivity
       How far away bot will hear. 0.0 hear nothing, 1.5 used for skill 1.
       Value: 0.0-1.5
- 
+
  - track_sound_time_min
  - track_sound_time_max
       How long time in seconds bot tries to track one sound?
- 
+
  - can_longjump
       Can bot at this skill level use longjump.
       Value: 0/1 (0 = no, 1 = yes)
- 
+
  - random_jump_frequency
       How often out of 100 times the bot will do random jump.
       Value: 0-100
-      
+
  - random_jump_duck_frequency
-      How often out of 100 times the bot will do random duck when random 
+      How often out of 100 times the bot will do random duck when random
       jumping (midair). This is subsetting for 'random_jump_frequency'.
       Value: 0-100
- 
+
  - random_duck_frequency
       How often (out of 100 times) the bot will do random duck.
       Value: 0-100
-      
+
  - random_longjump_frequency
       How often out of 100 times the bot will do random longjump.
       Value: 0-100
 
-Command - botweapon 
+Command - botweapon
 
 Usage:
  - botweapon <weapon-name> <setting> <value>
@@ -405,7 +410,7 @@ Usage:
 
  - botweapon <weapon-name>
       Shows all setting values for weapon.
-      
+
  - botweapon reset
       Reset all weapon settings to default.
 
@@ -425,14 +430,14 @@ List of weapon-namess:
   weapon_9mmhandgun
 
 List of available settings:
- 
+
  - primary_skill_level
-      Bot skill must be less than or equal to this value for bot to use 
+      Bot skill must be less than or equal to this value for bot to use
       primary attack.
       Value: 0-5 (0 = disabled, 1 highest level, 5 lowest)
-   
+
  - secondary_skill_level
-      Bot skill must be less than or equal to this value for bot to use 
+      Bot skill must be less than or equal to this value for bot to use
       secondary attack.
       Value: 0-5 (0 = disabled, 1 highest level, 5 lowest)
 
@@ -444,49 +449,49 @@ List of available settings:
  - avoid_this_gun
       Bot avoids using this weapon if possible.
       Value: 0/1 (0 = bot doesn't avoid weapon, 1 avoid)
- 
+
  - prefer_higher_skill_attack
-      Bot uses higher skill attack of primary and secondary attacks if both 
+      Bot uses higher skill attack of primary and secondary attacks if both
       available.
       Value: 0/1 (0 = use both attacks, 1 only use better one)
- 
+
  - primary_min_distance
       Minimum distance for using primary attack of this weapon.
       Value: 0-9999 (0 = no minimum)
- 
+
  - primary_max_distance
       Maximum distance for using primary attack of this weapon.
       Value: 0-9999 (9999 = no maximum)
-      
+
  - secondary_min_distance
       Minimum distance for using secondary attack of this weapon.
       Value: 0-9999 (0 = no minimum)
-   
+
  - secondary_max_distance
       Maximum distance for secondary attack of using this weapon.
       Value: 0-9999 (9999 = no maximum)
-   
+
  - opt_distance
       Optimal distance from target when using this weapon.
       Value: 0-9999
- 
+
  - use_percent
       Times out of 100 to use this weapon when available.
       Value: 0-100
- 
+
  - can_use_underwater
       Can use this weapon underwater.
       Value: 0/1 (0 = no, 1 = yes)
- 
+
  - primary_fire_percent
-      Times out of 100 to use primary fire when both attacks are available 
+      Times out of 100 to use primary fire when both attacks are available
       to use.
       Value: 0-100
-         
+
  - low_ammo_primary
       Ammo-level at which bot thinks weapon is running out of primary ammo.
       Value: 1-255
-   
+
  - low_ammo_secondary
       Ammo-level at which bot thinks weapon is running out of secondary ammo.
       Value: 1-255
