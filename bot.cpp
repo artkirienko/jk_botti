@@ -84,13 +84,13 @@ void BotKick(bot_t &pBot)
 
    if(pBot.userid <= 0)  // user id filled in yet?
       pBot.userid = GETPLAYERUSERID(pBot.pEdict);
-   
+
    JKASSERT(pBot.is_used == FALSE);
-   JKASSERT(FNullEnt(pBot.pEdict));   
+   JKASSERT(FNullEnt(pBot.pEdict));
    JKASSERT(pBot.userid <= 0);
-   
+
    safevoid_snprintf(cmd, sizeof(cmd), "kick # %d\n", pBot.userid);
-   
+
    SERVER_COMMAND(cmd);  // kick the bot using 'kick # <userid>'
    SERVER_EXECUTE();
 }
@@ -101,9 +101,9 @@ static void BotSpawnInit( bot_t &pBot )
 {
    pBot.bot_think_time = -1.0;
    pBot.f_last_think_time = gpGlobals->time - 0.1;
-   
+
    pBot.f_recoil = 0;
-   
+
    pBot.v_prev_origin = Vector(9999.0, 9999.0, 9999.0);
    pBot.f_speed_check_time = gpGlobals->time;
 
@@ -125,7 +125,7 @@ static void BotSpawnInit( bot_t &pBot )
 
    pBot.pTrackSoundEdict = NULL;
    pBot.f_track_sound_time = 0.0;
-   
+
    memset(pBot.exclude_points, 0, sizeof(pBot.exclude_points));
 
    pBot.b_on_ground = 0;
@@ -134,9 +134,9 @@ static void BotSpawnInit( bot_t &pBot )
    pBot.b_ducking = 0;
    pBot.b_has_enough_ammo_for_good_weapon = 0;
    pBot.b_low_health = 0;
-   
+
    pBot.f_last_time_attacked = 0;
-   
+
    pBot.eagle_secondary_state = 0;
 
    pBot.blinded_time = 0.0;
@@ -171,21 +171,21 @@ static void BotSpawnInit( bot_t &pBot )
    pBot.f_next_find_visible_sound_enemy_time = 0.0f;
 
    pBot.f_duck_time = 0.0;
-   
+
    pBot.f_random_jump_time = 0.0;
    pBot.f_random_jump_duck_time = 0.0;
    pBot.f_random_jump_duck_end = 0.0;
    pBot.f_random_duck_time = 0.0;
    pBot.prev_random_type = 0;
-   
+
    pBot.f_sniper_aim_time = 0.0;
-      
+
    pBot.b_longjump_do_jump = FALSE;
    pBot.b_longjump = FALSE;
    pBot.f_combat_longjump = 0.0;
    pBot.f_longjump_time = 0.0;
    pBot.b_combat_longjump = FALSE;
-   
+
    pBot.f_shoot_time = gpGlobals->time;
    pBot.f_primary_charging = -1.0;
    pBot.f_secondary_charging = -1.0;
@@ -211,7 +211,7 @@ static void BotSpawnInit( bot_t &pBot )
    pBot.b_use_button = FALSE;
    pBot.f_use_button_time = 0;
    pBot.b_lift_moving = FALSE;
-   
+
    pBot.v_use_target = Vector(0,0,0);
 
    pBot.b_spray_logo = FALSE;
@@ -222,7 +222,7 @@ static void BotSpawnInit( bot_t &pBot )
    pBot.f_special_shoot_angle = 0.0;
 
    pBot.f_weaponchange_time = 0.0;
-   
+
    pBot.f_pause_look_time = 0.0;
 
    pBot.f_current_hearing_sensitivity = -1;
@@ -282,11 +282,11 @@ static void BotSprayLogo(bot_t &pBot)
 {
    edict_t * pEntity = pBot.pEdict;
    char *logo_name = pBot.logo_name;
-   
+
    int index;
    TraceResult pTrace;
    Vector v_src, v_dest;
-   
+
    v_src = pEntity->v.origin + pEntity->v.view_ofs;
    v_dest = v_src + UTIL_AnglesToForward(pEntity->v.v_angle) * 80;
    UTIL_TraceMove( v_src, v_dest, ignore_monsters, pEntity->v.pContainingEntity, &pTrace );
@@ -346,11 +346,11 @@ static void BotPickName( char *name_buffer, int sizeof_name_buffer )
          if (pPlayer && !pPlayer->free && !FBitSet(pPlayer->v.flags, FL_PROXY))
          {
             const char * netname = STRING(pPlayer->v.netname);
-            
+
             //check if bot name is [lvlX]name format...
             if (strncmp(netname, "[lvl", 4) == 0 && netname[4] >= '1' && netname[4] <= '5' && netname[5] == ']')
                netname += 6;
-            
+
             if (strcmp(bot_names[name_index], netname) == 0)
             {
                used = TRUE;
@@ -373,6 +373,8 @@ static void BotPickName( char *name_buffer, int sizeof_name_buffer )
       }
    }
 
+   UTIL_ConsolePrintf("Name buffer %s...\n", bot_names[name_index]);
+
    safe_strcopy(name_buffer, sizeof_name_buffer, bot_names[name_index]);
 }
 
@@ -382,12 +384,12 @@ static qboolean TeamInTeamBlockList(const char * teamname)
 {
    if(!team_blockedlist)
       team_blockedlist = strdup("");
-      
+
    // make a copy because strtok is destructive
    int slen = strlen(team_blockedlist);
    char * blocklist = (char*)alloca(slen+1);
    memcpy(blocklist, team_blockedlist, slen+1);
-   
+
    char *pName = strtok( blocklist, ";" );
    while ( pName != NULL && *pName)
    {
@@ -399,7 +401,7 @@ static qboolean TeamInTeamBlockList(const char * teamname)
 
       pName = strtok( NULL, ";" );
    }
-      
+
    return(FALSE);
 }
 
@@ -409,39 +411,39 @@ char * GetSpecificTeam(char * teamstr, size_t slen, qboolean get_smallest, qbool
 {
    if(!!get_smallest + !!get_largest != 1)
       return(NULL);
-   
+
    // get team
    int find_index = -1;
    int find_count = get_smallest ? 9999 : -1;
-   
+
    for(int i = 0; i < MAX_TEAMS; i++)
-   {         
+   {
       if(*g_team_names[i] && !TeamInTeamBlockList(g_team_names[i]))
       {
          int count = 0;
          char teamname[MAX_TEAMNAME_LENGTH];
-            
+
          // collect player counts for team
          for(int j = 1; j <= gpGlobals->maxClients; j++)
          {
             edict_t * pClient = INDEXENT(j);
-            
+
             // skip unactive clients
             if(!pClient || pClient->free || FNullEnt(pClient) || GETPLAYERUSERID(pClient) <= 0 || STRING(pClient->v.netname)[0] == 0)
                continue;
-            
+
             // skip bots?
             if(only_count_bots && UTIL_GetBotIndex(pClient) != -1)
                continue;
-            
+
             // match team
             if(!stricmp(UTIL_GetTeam(pClient, teamname, sizeof(teamname)), g_team_names[i]))
             {
                count++;
             }
          }
-                        
-         
+
+
          if(get_smallest)
          {
             // smaller?
@@ -462,17 +464,17 @@ char * GetSpecificTeam(char * teamstr, size_t slen, qboolean get_smallest, qbool
          }
       }
    }
-      
+
    // got it?
    if(find_index != -1)
    {
       if(get_largest && find_count == 0)
          return(NULL);
-      
+
       safe_strcopy(teamstr, slen, g_team_names[find_index]);
       return(teamstr);
    }
-   
+
    return(NULL);
 }
 
@@ -489,7 +491,7 @@ static int GetTeamIndex( const char *pTeamName )
             return tm;
       }
    }
-   
+
    return -1;   // No match
 }
 
@@ -499,7 +501,7 @@ static void RecountTeams(void)
 {
    if(!is_team_play)
       return;
-	
+
    // Construct teams list
    char teamlist[TEAMPLAY_TEAMLISTLENGTH];
    char *pName;
@@ -510,7 +512,7 @@ static void RecountTeams(void)
    // Copy all of the teams from the teamlist
    // make a copy because strtok is destructive
    safe_strcopy(teamlist, sizeof(teamlist), g_team_list);
-   
+
    pName = teamlist;
    pName = strtok( pName, ";" );
    while ( pName != NULL && *pName )
@@ -519,11 +521,11 @@ static void RecountTeams(void)
       {
          safe_strcopy(g_team_names[g_num_teams], sizeof(g_team_names[g_num_teams]), pName);
          g_num_teams++;
-         
+
          if(g_num_teams == MAX_TEAMS)
             break;
       }
-      
+
       pName = strtok( NULL, ";" );
    }
 
@@ -532,7 +534,7 @@ static void RecountTeams(void)
       g_num_teams = 0;
       g_team_limit = FALSE;
    }
-   
+
    // Sanity check
    memset( g_team_scores, 0, sizeof(g_team_scores) );
 
@@ -543,17 +545,17 @@ static void RecountTeams(void)
 
       if(!plr || plr->free || FNullEnt(plr) || GETPLAYERUSERID(plr) <= 0 || STRING(plr->v.netname)[0] == 0)
          continue;
-      
+
       char teamname[MAX_TEAMNAME_LENGTH];
       const char *pTeamName;
-      
+
       pTeamName = UTIL_GetTeam(plr, teamname, sizeof(teamname));
-      
+
       // try add to existing team
       int tm = GetTeamIndex( pTeamName );
-      
+
       if ( tm < 0 ) // no team match found
-      { 
+      {
          if ( !g_team_limit && g_num_teams < MAX_TEAMS)
          {
             // add to new team
@@ -583,12 +585,12 @@ void BotCheckTeamplay(void)
       is_team_play = FALSE;
 
    checked_teamplay = TRUE;
-   
+
    // get team list, exactly as in teamplay_gamerules.cpp
    if(is_team_play)
    {
       safe_strcopy(g_team_list, sizeof(g_team_list), CVAR_GET_STRING("mp_teamlist"));
-      
+
       edict_t *pWorld = INDEXENT(0);
       if ( pWorld && pWorld->v.team )
       {
@@ -601,23 +603,23 @@ void BotCheckTeamplay(void)
             }
          }
       }
-      
+
       // Has the server set teams
       g_team_limit = ( *g_team_list != 0 );
-      
+
       RecountTeams();
    }
    else
    {
       g_team_list[0] = 0;
       g_team_limit = FALSE;
-      
+
       memset(g_team_names, 0, sizeof(g_team_names));
    }
 }
 
 
-// 
+//
 void BotCreate( const char *skin, const char *name, int skill, int top_color, int bottom_color, int cfg_bot_index )
 {
    edict_t *BotEnt;
@@ -630,24 +632,24 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
    qboolean got_skill_arg = FALSE;
    char c_topcolor[4], c_bottomcolor[4];
    int  max_skin_index;
-   
+
    max_skin_index = number_skins;
-   
+
    // balance teams, ignore input skin
    if(is_team_play && team_balancetype >= 1 && g_team_limit)
    {
       RecountTeams();
-      
+
       // get smallest team
       if(GetSpecificTeam(balanceskin, sizeof(balanceskin), TRUE, FALSE, FALSE))
       {
          if (skin != NULL && skin[0] != '\0')
             UTIL_ConsolePrintf("[warning] Teambalance overriding input model '%s' with '%s'", skin, balanceskin);
-         
+
          skin = balanceskin;
       }
    }
-   
+
    if (skin == NULL || skin[0] == '\0')
    {
       index = RANDOM_LONG2(0, number_skins-1);
@@ -725,7 +727,7 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
          }
       }
    }
-   
+
    if ((name != NULL) && (*name != 0))
    {
       safe_strcopy(c_name, sizeof(c_name), name);
@@ -740,7 +742,7 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
          safe_strcopy(c_name, sizeof(c_name), c_skin);
       }
    }
-   
+
    if (skill >= 1 && skill <= 5)
    {
       got_skill_arg = TRUE;
@@ -755,34 +757,34 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
       top_color = RANDOM_LONG2(0, 255);
    if ((bottom_color < 0) || (bottom_color > 255))
       bottom_color = RANDOM_LONG2(0, 255);
-   
+
    safevoid_snprintf(c_topcolor, sizeof(c_topcolor), "%d", top_color);
    safevoid_snprintf(c_bottomcolor, sizeof(c_bottomcolor), "%d", bottom_color);
 
    length = strlen(c_name);
 
    // remove any illegal characters from name...
-   for (i = 0; i < length; i++)
-   {
-      if ((c_name[i] <= ' ') || (c_name[i] > '~') ||
-          (c_name[i] == '"'))
-      {
-         for (j = i; j < length; j++)  // shuffle chars left (and null)
-            c_name[j] = c_name[j+1];
-         length--;
-      }
-   }
-   
+   // for (i = 0; i < length; i++)
+   // {
+   //    if ((c_name[i] <= ' ') || (c_name[i] > '~') ||
+   //        (c_name[i] == '"'))
+   //    {
+   //       for (j = i; j < length; j++)  // shuffle chars left (and null)
+   //          c_name[j] = c_name[j+1];
+   //       length--;
+   //    }
+   // }
+
    //
    // Bug fix: remove "(1)" tags from name, HLDS adds "(1)" on duplicated names (and "(2), (3), ...")
    //
-   if(c_name[0] == '(' && (c_name[1] >= '1' && c_name[1] <= '9') && c_name[2] == ')') 
+   if(c_name[0] == '(' && (c_name[1] >= '1' && c_name[1] <= '9') && c_name[2] == ')')
    {
       length = strlen(&c_name[3]) + 1; // str+null
       for(i = 0; i < length; i++)
          c_name[i] = (&c_name[3])[i];
    }
-   
+
    //
    // Bug fix: remove [lvlX] tags always
    //
@@ -791,23 +793,23 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
       // Read skill from config file name
       if(!got_skill_arg)
       	 skill = c_name[4] - '0';
-      
+
       length = strlen(&c_name[6]) + 1; // str+null
       for(i = 0; i < length; i++)
          c_name[i] = (&c_name[6])[i];
    }
-   
+
    //
-   if(bot_add_level_tag) 
+   if(bot_add_level_tag)
    {
       char tmp[sizeof(c_name)];
-      
+
       safevoid_snprintf(tmp, sizeof(tmp), "[lvl%d]%s", skill, c_name);
       tmp[sizeof(tmp)-1] = 0;  // make sure c_name is null terminated
       strcpy(c_name, tmp);
       c_name[sizeof(c_name)-1] = 0;  // make sure c_name is null terminated
    }
-   
+
    if(UTIL_GetBotCount() < 32)
       BotEnt = (*g_engfuncs.pfnCreateFakeClient)( c_name );
    else
@@ -917,7 +919,7 @@ void BotCreate( const char *skin, const char *name, int skill, int top_color, in
       pBot.bot_say_msg[0] = 0;
       pBot.f_bot_chat_time = gpGlobals->time;
       pBot.b_bot_endgame = FALSE;
-      
+
       // use system wide timer for connection times
       // bot will stay 30-160 minutes
       pBot.stay_time = 60 * (double)RANDOM_FLOAT2(30, 160);
@@ -933,13 +935,13 @@ void BotReplaceConnectionTime(const char * name, float * timeslot)
    for(int i = 0; i < 32; i++)
    {
       bot_t &pBot = bots[i];
-      
+
       // find bot by name
       if(strcmp(pBot.name, name) != 0)
          continue;
-      
+
       double current_time = UTIL_GetSecs();
-      
+
       // check if stay time has been exceeded
       if(current_time - pBot.connect_time > pBot.stay_time || current_time - pBot.connect_time <= 0)
       {
@@ -949,9 +951,9 @@ void BotReplaceConnectionTime(const char * name, float * timeslot)
          // bot has been already here for 20%-80% of the total stay time
          pBot.connect_time = current_time - pBot.stay_time * (double)RANDOM_FLOAT2(0.2, 0.8);
       }
-      
+
       *timeslot = (float)(current_time - pBot.connect_time);
-      
+
       break;
    }
 }
@@ -1043,7 +1045,7 @@ static void BotFindItem( bot_t &pBot )
    // halt the rest of the function
    if (pBot.f_find_item > gpGlobals->time || pBot.pBotPickupItem)
       return;
-   
+
    // try find again after 0.1sec
    pBot.f_find_item = gpGlobals->time + 0.1;
 
@@ -1063,7 +1065,7 @@ static void BotFindItem( bot_t &pBot )
 
       // see if this is a "func_" type of entity (func_button, etc.)...
       if (strncmp("func_", item_name, 5) == 0)
-      {      	
+      {
          // BModels have 0,0,0 for origin so must use VecBModelOrigin...
          entity_origin = VecBModelOrigin(pent);
 
@@ -1089,7 +1091,7 @@ static void BotFindItem( bot_t &pBot )
             vecEnd = entity_origin;
 
             // trace a line from bot's eyes to func_ladder entity...
-            UTIL_TraceMove( vecStart, vecEnd, dont_ignore_monsters, 
+            UTIL_TraceMove( vecStart, vecEnd, dont_ignore_monsters,
                             pEdict->v.pContainingEntity, &tr);
 
             // check if traced all the way up to the entity (didn't hit wall)
@@ -1117,7 +1119,7 @@ static void BotFindItem( bot_t &pBot )
          else
          {
             // trace a line from bot's eyes to func_ entity...
-            UTIL_TraceMove( vecStart, vecEnd, dont_ignore_monsters, 
+            UTIL_TraceMove( vecStart, vecEnd, dont_ignore_monsters,
                             pEdict->v.pContainingEntity, &tr);
 
             // check if traced all the way up to the entity (didn't hit wall)
@@ -1133,7 +1135,7 @@ static void BotFindItem( bot_t &pBot )
                // check if entity is wall mounted health charger...
                // check if the bot can use this item and
                // check if the recharger is ready to use (has power left)...
-               if (strcmp("func_healthcharger", item_name) == 0 && 
+               if (strcmp("func_healthcharger", item_name) == 0 &&
                	   (pEdict->v.health < VALVE_MAX_NORMAL_HEALTH) && (pent->v.frame == 0))
                {
                   // check if flag not set...
@@ -1157,7 +1159,7 @@ static void BotFindItem( bot_t &pBot )
 
                      can_pickup = TRUE;
                   }
-                  
+
                   if(can_pickup)
                      goto endloop;
                }
@@ -1194,7 +1196,7 @@ static void BotFindItem( bot_t &pBot )
 
                      can_pickup = TRUE;
                   }
-                  
+
                   if(can_pickup)
                      goto endloop;
                }
@@ -1206,7 +1208,7 @@ static void BotFindItem( bot_t &pBot )
 
                // check if entity is a button...
                if (FIsClassname(item_name, tr.pHit) && strcmp("func_button", item_name) == 0)
-               {               	  
+               {
                   // use the button about 100% of the time, if haven't
                   // used a button in at least 5 seconds...
                   if ((RANDOM_LONG2(1, 100) <= 100) &&
@@ -1234,7 +1236,7 @@ static void BotFindItem( bot_t &pBot )
 
                         can_pickup = TRUE;
                      }
-                     
+
                      if(can_pickup)
                         goto endloop;
                   }
@@ -1272,7 +1274,7 @@ static void BotFindItem( bot_t &pBot )
                   // someone owns this weapon or it hasn't respawned yet
                   continue;
                }
-               
+
                // check if player has already
                select_index = -1;
                qboolean found = FALSE;
@@ -1280,11 +1282,11 @@ static void BotFindItem( bot_t &pBot )
                {
                   if((itemflag & pSelect[select_index].waypoint_flag) == 0)
                      continue;
-                  
+
                   found = TRUE;
                   break;
                }
-               
+
                if(found)
                {
                   //does player have this weapon
@@ -1311,7 +1313,7 @@ static void BotFindItem( bot_t &pBot )
                   // someone owns this weapon or it hasn't respawned yet
                   continue;
                }
-               
+
                // check if player is running out of this ammo on any weapon
                select_index = -1;
                while(pSelect[++select_index].iId)
@@ -1330,14 +1332,14 @@ static void BotFindItem( bot_t &pBot )
                      else if(BotSecondaryAmmoLow(pBot, pSelect[select_index]) == AMMO_LOW)
                         can_pickup = TRUE;
                   }
-                  
+
                   if(can_pickup)
                   {
                      break;
                   }
                }
             }
-            
+
             // pick up longjump
             else if (strcmp("item_longjump", item_name) == 0)
             {
@@ -1346,7 +1348,7 @@ static void BotFindItem( bot_t &pBot )
                   // someone owns this weapon or it hasn't respawned yet
                   continue;
                }
-               
+
                // check if the bot can use this item...
                if (!pBot.b_longjump && skill_settings[pBot.bot_skill].can_longjump)
                {
@@ -1438,7 +1440,7 @@ static void BotFindItem( bot_t &pBot )
             else if (strcmp("monster_snark", item_name) == 0)
             {
             }
-            
+
          }  // end if object is visible
       }  // end else not "func_" entity
 
@@ -1497,7 +1499,7 @@ static qboolean BotLookForGrenades( bot_t &pBot )
       if (FInViewCone( entity_origin, pEdict ) && FVisible( entity_origin, pEdict, pent ))
       {
          const char ** p_grna = grenade_names;
-          
+
          while(*p_grna) {
             if (FIsClassname(*p_grna, pent))
                return TRUE;
@@ -1510,10 +1512,10 @@ static qboolean BotLookForGrenades( bot_t &pBot )
 }
 
 
-static void HandleWallOnLeft( bot_t &pBot ) 
+static void HandleWallOnLeft( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-        
+
    // if there was a wall on the left over 1/2 a second ago then
    // 20% of the time randomly turn between 45 and 60 degrees
 
@@ -1533,10 +1535,10 @@ static void HandleWallOnLeft( bot_t &pBot )
 }
 
 
-static void HandleWallOnRight( bot_t &pBot ) 
+static void HandleWallOnRight( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-        
+
    // if there was a wall on the right over 1/2 a second ago then
    // 20% of the time randomly turn between 45 and 60 degrees
 
@@ -1763,18 +1765,18 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       if ((pBot.f_use_health_time + 10.0) > gpGlobals->time)
       {
          pBot.f_move_speed = 0;  // don't move while using health station
-         
+
          // block strafing before using health station
          pBot.f_strafe_time = gpGlobals->time + 1.0f;
          pBot.f_strafe_direction = 0.0f;
-         
+
          // aim at the button..
          Vector v_target = pBot.v_use_target - GetGunPosition( pEdict );
          Vector target_angle = UTIL_VecToAngles(v_target);
 
          pEdict->v.idealpitch = UTIL_WrapAngle(target_angle.x);
          pEdict->v.ideal_yaw = UTIL_WrapAngle(target_angle.y);
-         
+
          pBot.f_move_speed = pBot.f_max_speed;
 
          pEdict->v.button = IN_USE;
@@ -1797,7 +1799,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       if ((pBot.f_use_HEV_time + 10.0) > gpGlobals->time)
       {
          pBot.f_move_speed = 0;  // don't move while using HEV station
-         
+
          // block strafing before using hev
          pBot.f_strafe_time = gpGlobals->time + 1.0f;
          pBot.f_strafe_direction = 0.0f;
@@ -1808,7 +1810,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
          pEdict->v.idealpitch = UTIL_WrapAngle(target_angle.x);
          pEdict->v.ideal_yaw = UTIL_WrapAngle(target_angle.y);
-         
+
          pBot.f_move_speed = pBot.f_max_speed;
 
          pEdict->v.button = IN_USE;
@@ -1828,7 +1830,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
    else if (pBot.b_use_button)
    {
       pBot.f_move_speed = 0;  // don't move while using elevator
-      
+
       // block strafing before using lift
       pBot.f_strafe_time = gpGlobals->time + 2.0f;
       pBot.f_strafe_direction = 0.0f;
@@ -1895,7 +1897,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
                pBot.f_move_speed /= 3;  // move slowly while turning
                pBot.b_not_maxspeed = TRUE;
-               
+
                pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
 
                moved_distance = 2.0;  // dont use bot stuck code
@@ -1903,8 +1905,8 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
             else
             {
                Vector v_forward = UTIL_AnglesToForward(pEdict->v.v_angle);
-               
-               if(RANDOM_LONG2(0,1)) 
+
+               if(RANDOM_LONG2(0,1))
                {
                   // check if there is a wall on the left first...
                   if (BotCheckWallOnLeft( pBot ) || BotEdgeLeft(pBot, v_forward))
@@ -1916,7 +1918,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
                      HandleWallOnRight(pBot);
                   }
                }
-               else 
+               else
                {
                   // check if there is a wall on the right first...
                   if (BotCheckWallOnRight( pBot ) || BotEdgeRight(pBot, v_forward))
@@ -1930,7 +1932,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
                }
             }
          }
-         
+
          // check if bot is about to hit a wall.  TraceResult gets returned
          if ((pBot.f_dont_avoid_wall_time <= gpGlobals->time) &&
              BotCantMoveForward( pBot, &tr ))
@@ -1956,7 +1958,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
          pBot.f_start_use_ladder_time = 0.0;  // reset start ladder time
       }
-      
+
       // check if the bot hasn't moved much since the last location
       // and IS UNDERWATER
       if ((moved_distance <= 1.0f) && (pBot.f_prev_speed >= 1.0f) && pBot.b_in_water)
@@ -1965,7 +1967,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 
          pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
          pBot.f_look_for_waypoint_time = gpGlobals->time + 1.0;
-         
+
          // try duck
          pEdict->v.button |= IN_DUCK;  // duck down and move forward
       }
@@ -1974,7 +1976,7 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
       else if ((moved_distance <= 1.0f) && (pBot.f_prev_speed >= 1.0f) && !pBot.b_on_ladder)
       {
          qboolean bCrouchJump = FALSE;
-         
+
          // the bot must be stuck!
 
          pBot.f_dont_avoid_wall_time = gpGlobals->time + 1.0;
@@ -2030,30 +2032,30 @@ static void BotJustWanderAround(bot_t &pBot, float moved_distance)
 static void BotDoStrafe(bot_t &pBot)
 {
    edict_t *pEdict = pBot.pEdict;
-   
+
    // combat strafe
    if(pBot.pBotEnemy != NULL && FInViewCone(UTIL_GetOriginWithExtent(pBot, pBot.pBotEnemy), pEdict) && FVisibleEnemy( UTIL_GetOriginWithExtent(pBot, pBot.pBotEnemy), pEdict, pBot.pBotEnemy ))
    {
       // don't go too close to enemy
       // strafe instead
-      if(RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].battle_strafe) 
+      if(RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].battle_strafe)
       {
-         if(pBot.f_strafe_time <= gpGlobals->time) 
+         if(pBot.f_strafe_time <= gpGlobals->time)
          {
             pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.2);
             pBot.f_strafe_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0 : -1.0;
             pBot.f_move_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0 : -1.0;
          }
-         
+
          pBot.f_move_speed = 1.0;
       }
       else
       {
-         if(pBot.f_strafe_time <= gpGlobals->time) 
+         if(pBot.f_strafe_time <= gpGlobals->time)
          {
             pBot.f_strafe_time = gpGlobals->time + RANDOM_FLOAT2(0.5, 1.2);
             pBot.f_strafe_direction = RANDOM_FLOAT(-0.3, 0.3);
-            
+
             if(RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].keep_optimal_dist)
             {
                if((UTIL_GetOriginWithExtent(pBot, pBot.pBotEnemy) - pEdict->v.origin).Length() < pBot.current_opt_distance)
@@ -2064,14 +2066,14 @@ static void BotDoStrafe(bot_t &pBot)
             else
                pBot.f_move_direction = (RANDOM_LONG2(1, 100) <= 50) ? 1.0 : -1.0;
          }
-         
+
          pBot.f_move_speed = 32.0;
       }
-      
+
       if(pBot.f_dont_avoid_wall_time <= gpGlobals->time)
       {
          Vector v_forward = UTIL_AnglesToForward(pEdict->v.v_angle);
-         
+
          // check for walls, left and right
          if(pBot.f_strafe_direction > 0.0f)
          {
@@ -2083,7 +2085,7 @@ static void BotDoStrafe(bot_t &pBot)
             if(BotCheckWallOnLeft(pBot) || BotEdgeLeft(pBot, v_forward))
                pBot.f_strafe_direction = -pBot.f_strafe_direction;
          }
-      
+
          // check for walls, back and forward
          if(pBot.f_move_direction > 0.0f)
          {
@@ -2096,7 +2098,7 @@ static void BotDoStrafe(bot_t &pBot)
                pBot.f_move_direction = -pBot.f_move_direction;
          }
       }
-      
+
       // set move direction
       pBot.f_move_speed *= pBot.f_move_direction;
    }
@@ -2111,9 +2113,9 @@ static void BotDoStrafe(bot_t &pBot)
       	    // First kill off sideways movement
       	    float move_dir = UTIL_VecToAngles(pEdict->v.velocity).y;
       	    float look_dir = pEdict->v.v_angle.y;
-      	    
+
       	    float angle_diff = UTIL_WrapAngle(move_dir - look_dir);
-      	    
+
       	    if(angle_diff > 135.0f || angle_diff <= 135.0f)
       	    {
       	       // move forward
@@ -2128,7 +2130,7 @@ static void BotDoStrafe(bot_t &pBot)
             }
             else if(angle_diff <= -45.0f)
             {
-               // strafe on left          
+               // strafe on left
                pBot.f_strafe_direction = 1.0;
                pBot.f_move_direction = 1.0;
             }
@@ -2144,14 +2146,14 @@ static void BotDoStrafe(bot_t &pBot)
       	    // Then move towards waypoint sideways
             Vector v_wp = waypoints[pBot.curr_waypoint_index].origin;
             Vector v_dir = (v_wp - pEdict->v.origin);
-         
+
             Vector v_angles = UTIL_VecToAngles(v_dir);
-         
+
             float waypoint_dir = v_angles.y;
             float look_dir = pEdict->v.v_angle.y;
-         
+
             float angle_diff = UTIL_WrapAngle(waypoint_dir - look_dir);
-         
+
       	    if(angle_diff > 135.0f || angle_diff <= 135.0f)
       	    {
       	       // move backwards
@@ -2166,7 +2168,7 @@ static void BotDoStrafe(bot_t &pBot)
             }
             else if(angle_diff <= -45.0f)
             {
-               // strafe on right          
+               // strafe on right
                pBot.f_strafe_direction = -1.0;
                pBot.f_move_direction = 1.0;
             }
@@ -2184,10 +2186,10 @@ static void BotDoStrafe(bot_t &pBot)
          pBot.f_strafe_direction = 0.0;
          pBot.f_move_direction = 1.0;
       }
-      
+
       pBot.f_move_speed = 150.0f;
       pBot.b_not_maxspeed = TRUE;
-      
+
       // set move direction
       pBot.f_move_speed *= pBot.f_move_direction;
    }
@@ -2209,7 +2211,7 @@ static void BotDoStrafe(bot_t &pBot)
       if(pBot.f_dont_avoid_wall_time <= gpGlobals->time)
       {
          Vector v_forward = UTIL_AnglesToForward(pEdict->v.v_angle);
-         
+
          // check for walls, left and right
          if(pBot.f_strafe_direction > 0.0f)
          {
@@ -2231,9 +2233,9 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
    edict_t *pEdict = pBot.pEdict;
    float max_lj_distance = 0.0, target_distance;
 
-   // 
+   //
    // PART1 -- handle actions that are not finished
-   // 
+   //
 
    // fix bot animation on longjumping
    if (pBot.b_longjump_do_jump)
@@ -2241,24 +2243,24 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
       pBot.b_longjump_do_jump = FALSE;
       pEdict->v.button |= IN_DUCK;
       pEdict->v.button |= IN_JUMP;
-      
+
       pBot.f_duck_time = gpGlobals->time + RANDOM_FLOAT2(0.3, 0.5); //stay duck for some time to fix animation
-      
+
       return;
    }
 
    // duck in mid-air after random jump!
-   if (pBot.f_random_jump_duck_time > 0.0f && pBot.f_random_jump_duck_time <= gpGlobals->time) 
+   if (pBot.f_random_jump_duck_time > 0.0f && pBot.f_random_jump_duck_time <= gpGlobals->time)
    {
        pEdict->v.button |= IN_DUCK;  // need to duck (random duckjump)
-       
-       if(pBot.f_random_jump_duck_end > 0.0f && pBot.f_random_jump_duck_end <= gpGlobals->time) 
+
+       if(pBot.f_random_jump_duck_end > 0.0f && pBot.f_random_jump_duck_end <= gpGlobals->time)
        {
           pBot.f_random_jump_duck_time = 0.0;
           pBot.f_random_jump_duck_end = 0.0;
           pBot.f_random_jump_time = gpGlobals->time + RANDOM_FLOAT2(0.2, 0.4);
        }
-       
+
        return;
    }
 
@@ -2272,22 +2274,22 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
        pEdict->v.velocity.Length() > 50 && pBot.b_combat_longjump &&
        fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 10)
    {
-      // don't try to move for 1.0 seconds, otherwise the longjump is fucked up	
+      // don't try to move for 1.0 seconds, otherwise the longjump is fucked up
       pBot.f_longjump_time = gpGlobals->time + 1.0;
-      
+
       // we're done trying to do a longjump
       pBot.b_combat_longjump = FALSE;
-      
+
       // don't do another one for a certain amount of time
       if (RANDOM_LONG2(1,100) > 10)
          pBot.f_combat_longjump = gpGlobals->time + 1.0;
       else
          pBot.f_combat_longjump = gpGlobals->time + RANDOM_FLOAT2(3.0, 5.0);
-      
+
       // actually do the longjump
       pEdict->v.button |= IN_DUCK;
       pBot.b_longjump_do_jump = TRUE;
-      
+
       //UTIL_ConsolePrintf("%s doing longjump! - combat\n", STRING(pEdict->v.netname));
       return;
    }
@@ -2295,55 +2297,55 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
    //
    // PART2 -- return here if actions unfinished
    //
-   
+
    // random jump or duck or longjump?
-   if (pBot.f_random_jump_time > gpGlobals->time || 
+   if (pBot.f_random_jump_time > gpGlobals->time ||
        pBot.f_random_duck_time > gpGlobals->time ||
        pBot.f_combat_longjump > gpGlobals->time ||
-       pBot.b_combat_longjump) 
+       pBot.b_combat_longjump)
    {
       return;
    }
-   
+
    // Already jumping or ducking, or not on ground, or on ladder
    if(FBitSet(pEdict->v.button, IN_DUCK) || FBitSet(pEdict->v.button, IN_JUMP) ||
        !pBot.b_on_ground || pBot.b_on_ladder || pBot.b_in_water)
    {
       return;
    }
-   
+
    //
    // PART3 -- start new actions, first check if contitions are right, then select, then act
    //
-   
+
    // don't jump if trying to pick up item.
    if(pBot.pBotEnemy == NULL && !FNullEnt(pBot.pBotPickupItem) && !(pBot.pBotPickupItem->v.effects & EF_NODRAW) && !(pBot.pBotPickupItem->v.frame > 0))
       return;
 
    qboolean jump, duck, lj;
-   
+
    // if in combat mode jump more
    jump = (pBot.prev_random_type != 1 && pBot.f_random_jump_time <= gpGlobals->time &&
            (moved_distance >= 10.0f || pBot.pBotEnemy != NULL) && pBot.f_move_speed > 1.0f &&
             RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].random_jump_frequency);
-   
+
    duck = (pBot.prev_random_type != 2 && pBot.f_random_duck_time <= gpGlobals->time &&
-           pBot.pBotEnemy != NULL && 
+           pBot.pBotEnemy != NULL &&
            RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].random_duck_frequency);
-   
-   lj = (pBot.prev_random_type != 3 && pBot.b_longjump && pBot.f_combat_longjump <= gpGlobals->time && !pBot.b_combat_longjump && 
+
+   lj = (pBot.prev_random_type != 3 && pBot.b_longjump && pBot.f_combat_longjump <= gpGlobals->time && !pBot.b_combat_longjump &&
          skill_settings[pBot.bot_skill].can_longjump &&
          pBot.pBotEnemy != NULL && fabs(pEdict->v.v_angle.y - pEdict->v.ideal_yaw) <= 30.0f &&
          RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].random_longjump_frequency);
-   
+
    if(lj)
    {
       max_lj_distance = LONGJUMP_DISTANCE * (800 / CVAR_GET_FLOAT("sv_gravity"));
       target_distance = (UTIL_GetOriginWithExtent(pBot, pBot.pBotEnemy) - pEdict->v.origin).Length();
-      
+
       lj = (target_distance > 128.0f && target_distance < max_lj_distance);
    }
-   
+
    // ofcourse if we get multiple matches here we need to select
    if(lj)
    {
@@ -2375,19 +2377,19 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
       default:
          break;
       }
-      
+
       pBot.prev_random_type = 0;
       return;
    }
-   
+
    // if in combat mode jump more
    if(jump)
    {
       pEdict->v.button |= IN_JUMP;
-      
+
       pBot.prev_random_type = 1;
       //UTIL_ConsolePrintf("%s - Random jump\n", STRING(pEdict->v.netname));
-      
+
       // duck mid-air?
       if(RANDOM_LONG2(1, 100) <= skill_settings[pBot.bot_skill].random_jump_duck_frequency)
       {
@@ -2398,60 +2400,60 @@ static void BotDoRandomJumpingAndDuckingAndLongJumping(bot_t &pBot, float moved_
       }
       else
          pBot.f_random_jump_time = pBot.f_random_jump_duck_end + RANDOM_FLOAT2(0.3, 0.6); // don't try too often
-      
+
       return;
    }
-   
+
    // combat mode random ducking
    if(duck)
    {
       pEdict->v.button |= IN_DUCK;
-      
+
       pBot.prev_random_type = 2;
       //UTIL_ConsolePrintf("%s - Random duck\n", STRING(pEdict->v.netname));
-      
+
       pBot.f_duck_time = gpGlobals->time + RANDOM_FLOAT2(0.3, 0.45);
       pBot.f_random_duck_time = pBot.f_duck_time + RANDOM_FLOAT2(0.3, 0.6); // don't try too often
-      
+
       return;
    }
-   
+
    // combat mode random longjumping
    if(lj)
    {
       Vector vecSrc, target_angle;
       TraceResult tr;
       int mod;
-         
+
       vecSrc = pEdict->v.origin;
       mod = RANDOM_LONG2(1, 100) <= 50 ? -1 : 1;
-      
+
       // get a random angle (-30 or 30)
       for (int i = 1; i >= -1; i-=2)
       {
          target_angle.x = -pEdict->v.v_angle.x;
          target_angle.y = UTIL_WrapAngle(pEdict->v.v_angle.y + 30 * (mod * i));
          target_angle.z = pEdict->v.v_angle.z;
-         
+
          // trace a hull toward the current waypoint the distance of a longjump (depending on gravity)
          UTIL_TraceMove(vecSrc, vecSrc + UTIL_AnglesToForward(target_angle) * max_lj_distance, dont_ignore_monsters, pEdict, &tr);
-         
+
          // make sure it's clear
          if (tr.flFraction > 0.999999f)
          {
             //UTIL_ConsolePrintf("%s - Clear longjump path found\n", STRING(pEdict->v.netname));
             pBot.b_combat_longjump = TRUE;
-            
+
             pEdict->v.ideal_yaw += 30 * mod;
-            
+
             BotFixIdealYaw(pEdict);
-            
+
             break;
          }
       }
-      
+
       pBot.f_combat_longjump = gpGlobals->time + RANDOM_FLOAT2(0.3, 0.6); // don't try too often
-      
+
       if(pBot.b_combat_longjump)
       {
          pBot.prev_random_type = 3;
@@ -2465,7 +2467,7 @@ static void BotRunPlayerMove(bot_t &pBot, const float *viewangles, float forward
 {
    /*
       Calling sequence after calling g_engfuncs.pfnRunPlayerMove:
-      
+
          1. CmdStart
          2. PlayerPreThink
          3. PM_Move
@@ -2481,7 +2483,7 @@ static void BotRunPlayerMove(bot_t &pBot, const float *viewangles, float forward
 void BotThink( bot_t &pBot )
 {
    edict_t *pEdict = pBot.pEdict;
-   
+
    Vector v_diff;             // vector from previous to current location
    float moved_distance;      // length of v_diff vector (distance bot moved)
    TraceResult tr;
@@ -2497,17 +2499,17 @@ void BotThink( bot_t &pBot )
    // New code, BotThink is not run on every StartFrame anymore.
    pBot.f_frame_time = gpGlobals->time - pBot.f_last_think_time;
    pBot.f_last_think_time = gpGlobals->time;
-  
+
    pBot.msecval = (int)(pBot.f_frame_time * 1000.0);
-   
+
    // count up difference that integer conversion caused
    pBot.msecdel += pBot.f_frame_time * 1000.0 - pBot.msecval;
-   
+
    // remove effect of integer conversion and lost msecs on previous frames
    if(pBot.msecdel > 1.625f)
    {
       float diff = 1.625f;
-      
+
       if(pBot.msecdel > 60.0f)
          diff = 60.0f;
       else if(pBot.msecdel > 30.0f)
@@ -2518,13 +2520,13 @@ void BotThink( bot_t &pBot )
          diff = 7.5f;
       else if(pBot.msecdel > 3.25f)
          diff = 3.25f;
-      
+
       pBot.msecval += diff - 0.5f;
       pBot.msecdel -= diff - 0.5f;
    }
-   
+
    if (pBot.msecval < 1)    // don't allow msec to be less than 1...
-   {      
+   {
       // adjust msecdel so we can correct lost msecs on following frames
       pBot.msecdel += pBot.msecval - 1;
       pBot.msecval = 1;
@@ -2535,7 +2537,7 @@ void BotThink( bot_t &pBot )
       pBot.msecdel += pBot.msecval - 100;
       pBot.msecval = 100;
    }
-   
+
    pBot.total_msecval += pBot.msecval / 1000.0;
    pBot.total_frame_time += pBot.f_frame_time;
 
@@ -2548,7 +2550,7 @@ void BotThink( bot_t &pBot )
       pBot.total_counter=1;
    }
 #endif
-   
+
    pEdict->v.button = 0;
    pBot.f_move_speed = 0.0;
 
@@ -2557,7 +2559,7 @@ void BotThink( bot_t &pBot )
    pBot.b_on_ladder = pEdict->v.movetype == MOVETYPE_FLY;
    pBot.b_in_water = pEdict->v.waterlevel == 2 || pEdict->v.waterlevel == 3;
    pBot.b_ducking = (pEdict->v.flags & FL_DUCKING) == FL_DUCKING;
-   
+
    pBot.b_low_health = BotLowHealth(pBot);
 
    BotUpdateHearingSensitivity(pBot);
@@ -2569,7 +2571,7 @@ void BotThink( bot_t &pBot )
 
       UTIL_HostSay(pEdict, 0, pBot.bot_say_msg);
    }
-      
+
    // in intermission.. don't do anything, freeze bot
    if(g_in_intermission)
    {
@@ -2579,7 +2581,7 @@ void BotThink( bot_t &pBot )
          pBot.b_bot_endgame = TRUE;
          BotChatEndGame(pBot);
       }
-      
+
       BotRunPlayerMove(pBot, pEdict->v.v_angle, 0, 0, 0, 0, 0, (byte)pBot.msecval);
       return;
    }
@@ -2599,12 +2601,12 @@ void BotThink( bot_t &pBot )
 
       if (RANDOM_LONG2(1, 100) <= 50)
          pEdict->v.button = IN_ATTACK;
-            
+
       BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed, 0, 0, pEdict->v.button, 0, (byte)pBot.msecval);
 
       return;
    }
-      
+
    // random chatting
    BotChatTalk(pBot);
 
@@ -2629,7 +2631,7 @@ void BotThink( bot_t &pBot )
 
       // turn towards ideal_yaw by yaw_speed degrees (slower than normal)
       BotChangeYaw( pBot, pEdict->v.yaw_speed / 2 );
-      
+
       BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed, 0, 0, pEdict->v.button, 0, (byte)pBot.msecval);
 
       return;
@@ -2677,29 +2679,29 @@ void BotThink( bot_t &pBot )
 
    // turn towards ideal_yaw by yaw_speed degrees
    BotChangeYaw( pBot, pEdict->v.yaw_speed );
-   
+
    // Only need to check ammo, since ammo check for weapons includes weapons ;)
    pBot.b_has_enough_ammo_for_good_weapon = !BotAllWeaponsRunningOutOfAmmo(pBot, TRUE);
-   
-   if(BotWeaponCanAttack(pBot, FALSE) && 
+
+   if(BotWeaponCanAttack(pBot, FALSE) &&
       ((pBot.b_has_enough_ammo_for_good_weapon && !pBot.b_low_health) || pBot.f_last_time_attacked < gpGlobals->time + 3.0f))
    {
       // get enemy
       BotFindEnemy( pBot );
 
       if(pBot.pBotEnemy == NULL)
-      {      
+      {
          // if has zoom weapon and zooming, click off zoom
-         if(pBot.current_weapon_index != -1 && 
-            (weapon_select[pBot.current_weapon_index].type & WEAPON_FIRE_ZOOM) == WEAPON_FIRE_ZOOM && 
+         if(pBot.current_weapon_index != -1 &&
+            (weapon_select[pBot.current_weapon_index].type & WEAPON_FIRE_ZOOM) == WEAPON_FIRE_ZOOM &&
             pEdict->v.fov != 0 &&
             !(pEdict->v.button & (IN_ATTACK|IN_ATTACK2)))
          {
             pEdict->v.button |= IN_ATTACK2;
          }
-         
+
          // if has aim spot weapon and have spot on, click spot off
-         if(pBot.current_weapon_index != -1 && 
+         if(pBot.current_weapon_index != -1 &&
             weapon_select[pBot.current_weapon_index].iId == GEARBOX_WEAPON_EAGLE &&
             pBot.eagle_secondary_state != 0 &&
             !(pEdict->v.button & (IN_ATTACK|IN_ATTACK2)))
@@ -2719,9 +2721,9 @@ void BotThink( bot_t &pBot )
       {
          BotShootAtEnemy( pBot );  // shoot at the enemy
          DidShootAtEnemy = (pBot.pBotEnemy != NULL);
-         
+
          pBot.f_pause_time = 0;  // dont't pause if enemy exists
-         
+
          // check if bot is on a ladder
          if (pBot.b_on_ladder)
          {
@@ -2733,57 +2735,57 @@ void BotThink( bot_t &pBot )
       {
          //
          pBot.f_pause_time = 0;
-         
+
          // need waypoint away from enemy?
          edict_t *pAvoidEnemy = pBot.pBotEnemy;
-         
+
          // don't have an enemy anymore so null out the pointer...
          BotRemoveEnemy(pBot, FALSE);
-         
+
          int enemy_waypoint = WaypointFindNearest(pAvoidEnemy, 1024);
          int self_waypoint = WaypointFindNearest(pEdict, 1024);
-      	 
+
          if(enemy_waypoint != -1 && self_waypoint != -1)
          {
             int runaway_waypoint = WaypointFindRunawayPath(self_waypoint, enemy_waypoint);
-            
+
             //if(pBot.waypoint_goal != runaway_waypoint)
             //   UTIL_ConsolePrintf("[%s] Set runaway waypoint: %d -> %d", pBot.name, pBot.waypoint_goal, runaway_waypoint);
-            
+
             pBot.wpt_goal_type = WPT_GOAL_LOCATION;
             pBot.curr_waypoint_index = self_waypoint;
-            pBot.waypoint_goal = runaway_waypoint; 
-            
+            pBot.waypoint_goal = runaway_waypoint;
+
             pBot.f_waypoint_goal_time = gpGlobals->time + 10.0f;
          }
       }
    }
-   
+
    if(DidShootAtEnemy)
    {
       // do nothing
    }
    else if (pBot.f_pause_time > gpGlobals->time)  // is bot "paused"?
-   {   	
+   {
       // you could make the bot look left then right, or look up
       // and down, to make it appear that the bot is hunting for
       // something (don't do anything right now)
-      
+
       if(pBot.f_pause_look_time <= gpGlobals->time)
       {
          if(RANDOM_LONG2(1, 100) <= 50)
             pEdict->v.ideal_yaw += RANDOM_LONG2(30, 60);
          else
             pEdict->v.ideal_yaw -= RANDOM_LONG2(30, 60);
-      
+
          if(pEdict->v.idealpitch > -30)
             pEdict->v.idealpitch -= RANDOM_LONG2(10, 30);
          else if(pEdict->v.idealpitch < 30)
             pEdict->v.idealpitch += RANDOM_LONG2(10, 30);
-      
+
          BotFixIdealYaw(pEdict);
          BotFixIdealPitch(pEdict);
-         
+
          pBot.f_pause_look_time = gpGlobals->time + RANDOM_FLOAT(0.5, 1.0);
       }
    }
@@ -2792,15 +2794,15 @@ void BotThink( bot_t &pBot )
            !FNullEnt(pEdict->v.groundentity) && (!pEdict->v.groundentity->v.velocity.is_zero_vector()))
    {
       Vector v_to_wp = waypoints[pBot.curr_waypoint_index].origin - GetGunPosition( pEdict );
-      
+
       Vector wp_angle = UTIL_VecToAngles(v_to_wp);
-      
+
       pEdict->v.idealpitch = UTIL_WrapAngle(wp_angle.x);
       pEdict->v.ideal_yaw = UTIL_WrapAngle(wp_angle.y);
-      
+
       pBot.f_move_speed = 50.0f;
       pBot.b_not_maxspeed = TRUE;
-      
+
       pBot.f_strafe_direction = 0;
       pBot.f_strafe_time = gpGlobals->time + 0.2f;
    }
@@ -2861,7 +2863,7 @@ void BotThink( bot_t &pBot )
             pEdict->v.button |= IN_DUCK;  // duck down while moving forward
       }
    }
-   
+
    if (pBot.f_grenade_search_time <= gpGlobals->time)
    {
       pBot.f_grenade_search_time = gpGlobals->time + 0.1;
@@ -2876,7 +2878,7 @@ void BotThink( bot_t &pBot )
       // move backwards for 1.0 second after seeing a grenade...
       pBot.f_move_speed = -pBot.f_move_speed;
       pBot.f_strafe_direction = RANDOM_FLOAT2(0, 1) * (pBot.f_strafe_direction>=0?1:-1);
-      
+
       // disable normal strafe code until we have cleared grenade
       pBot.f_strafe_time = gpGlobals->time + 2.0f;
    }
@@ -2887,14 +2889,14 @@ void BotThink( bot_t &pBot )
       pEdict->v.button |= IN_DUCK;  // need to duck (crowbar attack, and random combat ducking)
 
    // is the bot "paused"? or longjumping?
-   if (pBot.f_pause_time > gpGlobals->time || pBot.f_longjump_time > gpGlobals->time) 
+   if (pBot.f_pause_time > gpGlobals->time || pBot.f_longjump_time > gpGlobals->time)
       pBot.f_move_speed = pBot.f_strafe_direction = 0;  // don't move while pausing
-  
+
    BotDoRandomJumpingAndDuckingAndLongJumping(pBot, moved_distance);
-  
+
    // save the previous speed (for checking if stuck)
    pBot.f_prev_speed = pBot.f_move_speed;
-   
+
    // full strafe if bot isn't moving much else
    if(pBot.f_move_speed == 0.0f)
       f_strafe_speed = 0.0;
@@ -2902,36 +2904,36 @@ void BotThink( bot_t &pBot )
       f_strafe_speed = pBot.f_strafe_direction * pBot.f_max_speed;
    else
       f_strafe_speed = pBot.f_strafe_direction * pBot.f_move_speed;
-   
+
    // normalize strafe and move to keep speed at normal level
-   if(f_strafe_speed != 0.0f || pBot.f_move_speed != 0.0f) 
+   if(f_strafe_speed != 0.0f || pBot.f_move_speed != 0.0f)
    {
       Vector2D calc;
-      
+
       calc.x = f_strafe_speed;
       calc.y = pBot.f_move_speed;
-      
+
       calc = calc.Normalize() * (pBot.b_on_ladder || pBot.b_not_maxspeed ? pBot.f_move_speed : pBot.f_max_speed);
-      
+
       f_strafe_speed = calc.x;
       pBot.f_move_speed = calc.y;
-      
+
       if(0)
       {
          Vector v_angle = pEdict->v.v_angle;
          v_angle.x = 0;
-         
+
          Vector v_right = UTIL_AnglesToRight(v_angle);
          Vector v_forward = UTIL_AnglesToForward(v_angle);
-         
+
          Vector v_beam = v_forward * calc.y + v_right * calc.x;
          UTIL_DrawBeam(0, pEdict->v.origin, pEdict->v.origin + v_beam, 10, 2, 250, 50, 50, 200, 10);
       }
    }
-   
+
    BotRunPlayerMove(pBot, pEdict->v.v_angle, pBot.f_move_speed,
                                 f_strafe_speed, 0, pEdict->v.button, 0, (byte)pBot.msecval);
-   
+
    return;
 }
 

@@ -43,7 +43,7 @@ void BotLogoInit(void)
    if (bot_logo_fp != NULL)
    {
       UTIL_ConsolePrintf("Loading %s...\n", bot_logo_filename);
-      
+
       while ((num_logos < MAX_BOT_LOGOS) &&
              (fgets(logo_buffer, 80, bot_logo_fp) != NULL))
       {
@@ -83,7 +83,7 @@ void BotNameInit( void )
    if (bot_name_fp != NULL)
    {
       UTIL_ConsolePrintf("Loading %s...\n", bot_name_filename);
-      
+
       while ((number_names < MAX_BOT_NAMES) &&
              (fgets(name_buffer, 80, bot_name_fp) != NULL))
       {
@@ -98,16 +98,17 @@ void BotNameInit( void )
          str_index = 0;
          while (str_index < length)
          {
-            if ((name_buffer[str_index] < ' ') || (name_buffer[str_index] > '~') ||
-                (name_buffer[str_index] == '"'))
-            for (index=str_index; index < length; index++)
-               name_buffer[index] = name_buffer[index+1];
+            // if ((name_buffer[str_index] < ' ') || (name_buffer[str_index] > '~') ||
+            //     (name_buffer[str_index] == '"'))
+            // for (index=str_index; index < length; index++)
+            //    name_buffer[index] = name_buffer[index+1];
 
             str_index++;
          }
 
          if (name_buffer[0] != 0)
          {
+            UTIL_ConsolePrintf("Name buffer %s...\n", name_buffer);
             safe_strcopy(bot_names[number_names], sizeof(bot_names[number_names]), name_buffer);
 
             number_names++;
